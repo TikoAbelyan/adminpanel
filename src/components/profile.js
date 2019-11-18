@@ -1,0 +1,358 @@
+import React, { useEffect, useState } from "react";
+import { Dimmer, Loader, Button, Modal, Form, Input } from "semantic-ui-react";
+// import { Container, Form, Popup, Input, Button } from "semantic-ui-react";
+
+const Profile = () => {
+  const initialstate = {
+    users: [],
+    user: {
+      name: "",
+      surname: "",
+      email: "",
+      phone: "",
+      isAdmin: "",
+      text: ""
+    },
+    success: false,
+    error: ""
+  };
+  const [state, setState] = useState(initialstate);
+  useEffect(() => {
+    getUserData();
+  }, []);
+
+  const getUserData = async () => {
+    try {
+      const res = await fetch("http://admin.com:4000/profile", {
+        credentials: "include"
+      });
+      const response = await res.json();
+      setState(prevsState => ({
+        ...prevsState,
+        users: response.data.users,
+        user: response.data.user,
+        success: true,
+        error: ""
+      }));
+    } catch (err) {
+      console.log(err);
+    }
+    // .then(response => response.json())
+    // .then(response => this.setState({ users: response.data }))
+    // .catch(err => console.log(err));
+
+    // setState({
+    //   users: [],
+    //   user: {
+    //     name: "user Name",
+    //     surname: "Some surname",
+    //     email: "test@test.com",
+    //     phone: "1231231"
+    //   },
+    //   success: true,
+    //   error: "",
+    //   userGroupName: "user"
+    // });
+  };
+
+  const handleUserDelete = index => {
+    const { id } = index;
+    return fetch(`http://admin.com:4000/delete/${id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        const newList = state.users;
+        newList.filter(i => i.id !== data.id);
+        setState(getUserData());
+      });
+  };
+  const handleUpdateUser = it => {
+    console.log(it);
+  };
+  const handleEdit = ({ type, value, index }) => {
+    setState(prevsState => ({
+      ...prevsState,
+      users: prevsState.users.map((it, i) =>
+        i === index ? { ...it, [type]: value } : { ...it }
+      )
+    }));
+
+    // setState(prevsState => ({
+    //   ...prevsState,
+    //   [type]: { ...prevsState[type], [target]: value }
+    // }));
+    // setState(prevState => prevState.users.map((it, i) => console.log(...it)));
+    // console.log("index", index);
+    // console.log("state", state.users);
+    // state.users.map((it, i) => {
+    //   index === i ? console.log(it) : console.log("chka");
+    // });
+  };
+  const getUpdated = index =>
+    state.users.filter((it, ind) => index === ind && it)[0];
+
+  const editAble = async index => {
+    const { id, name, surname, email, phone, text } = getUpdated(index);
+
+    console.log("index", index);
+    await fetch(`http://admin.com:4000/update/${id}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ name, surname, email, phone, text })
+    });
+  };
+  // console.log(index);
+  // fetch(`http://admin.com:4000/delete/${index.id}`)
+  //   .then(response => response.json())
+  //   .then(response => this.setState({ users: response.data }))
+  //   .catch(err => console.log(err));
+  // fetch(`http://admin.com:4000/delete/${index.id}`)
+  //   .then(response => response.json())
+  //   .then(result => console.log(result))
+  //   .catch(e => console.log(e));
+
+  // console.log("PRIFILE users", state.users);
+  // console.log("PRIFILE user", state.user);
+  return (
+    <div>
+      {!state.success && !state.logedIn ? (
+        <Dimmer active>
+          <Loader size="mini">Loading</Loader>
+        </Dimmer>
+      ) : (
+        <div>
+          <div>
+            {state.user.isAdmin ? (
+              <p className="position_adm">
+                <span className="adm">Hello Admin </span> {state.user.name}
+              </p>
+            ) : (
+              <p className="position_adm">
+                <span className="adm">Hello user </span> {state.user.name}
+              </p>
+            )}
+          </div>
+          <div>
+            <span className="us_info">user surname</span> {state.user.surname}
+          </div>
+          <div>
+            <span className="us_info">user phone</span> {state.user.phone}
+          </div>
+          <div>
+            <span className="us_info">user email</span> {state.user.email}
+          </div>
+          {state.user.text && !state.user.isAdmin && (
+            <div className="btn_auth">
+              <span className="adm">Admin send message </span>
+              <p>{state.user.text}</p>
+            </div>
+          )}
+          {state.user.isAdmin && (
+            <table>
+              <thead className="first_compon">
+                <tr>
+                  <th>Name</th>
+                  <th>Surname</th>
+                  <th>Email</th>
+                  <th>Password</th>
+                  <th>phone</th>
+                  <th>edit</th>
+                  <th>delete</th>
+                </tr>
+              </thead>
+              {state.users &&
+                state.users.map((it, index) => {
+                  return (
+                    <tbody key={it.id}>
+                      <tr>
+                        <td>{it.name}</td>
+                        <td>{it.surname}</td>
+                        <td>{it.email}</td>
+                        <td>{it.password}</td>
+                        <td>{it.phone}</td>
+                        <td>
+                          <Modal
+                            trigger={
+                              <Button onClick={() => handleUpdateUser(it)}>
+                                edit
+                              </Button>
+                            }
+                            size="tiny"
+                            header="Reminder!"
+                            className="modal_container"
+                            content={
+                              <div>
+                                <div className="fl_container">
+                                  <div>{it.name}</div>
+                                  <div>{it.surname}</div>
+                                  <div>{it.email}</div>
+                                  <div>{it.phone}</div>
+                                  {/* <div>{it.text}</div> */}
+                                </div>
+
+                                <Form className="row w-100 flex-column justify-content-center align-items-center">
+                                  <Form.Group
+                                    widths="equal"
+                                    className="col-sm-9"
+                                  >
+                                    <Form.Field
+                                      id="form-input-control-last-name"
+                                      control={Input}
+                                      label="Ազգանուն"
+                                      placeholder="surname"
+                                      onChange={({ target: { value } }) =>
+                                        handleEdit({
+                                          type: "name",
+                                          value,
+                                          index
+                                        })
+                                      }
+                                      value={it.name}
+                                    />
+                                    <Form.Field
+                                      id="form-input-control-first-name"
+                                      control={Input}
+                                      label="Անուն"
+                                      placeholder="First name"
+                                      onChange={({ target: { value } }) =>
+                                        handleEdit({
+                                          type: "surname",
+                                          value,
+                                          index
+                                        })
+                                      }
+                                      value={it.surname}
+                                    />
+                                  </Form.Group>
+
+                                  <Form.Group
+                                    widths="equal"
+                                    className="col-sm-9"
+                                  >
+                                    <Form.Field
+                                      id="form-input-control-first-name"
+                                      control={Input}
+                                      label="Էլ․ Հասցե"
+                                      placeholder="email"
+                                      type="email"
+                                      onChange={({ target: { value } }) =>
+                                        handleEdit({
+                                          type: "email",
+                                          value,
+                                          index
+                                        })
+                                      }
+                                      value={it.email}
+                                    />
+                                    <Form.Field
+                                      id="form-input-control-last-name"
+                                      control={Input}
+                                      label="Հեոախոս"
+                                      placeholder="+374XXXXXX"
+                                      type="number"
+                                      onChange={({ target: { value } }) =>
+                                        handleEdit({
+                                          type: "phone",
+                                          value,
+                                          index
+                                        })
+                                      }
+                                      value={it.phone}
+                                    />
+                                  </Form.Group>
+                                  <Form.Group
+                                    widths="equal"
+                                    className="col-sm-9"
+                                  >
+                                    <Form.Field
+                                      id="form-input-control-first-name"
+                                      control={Input}
+                                      label="text user"
+                                      placeholder="text user"
+                                      onChange={({ target: { value } }) =>
+                                        handleEdit({
+                                          type: "text",
+                                          value,
+                                          index
+                                        })
+                                      }
+                                      value={it.text}
+                                    />
+                                  </Form.Group>
+                                </Form>
+                                {/* <input
+                                  onChange={({ target: { value } }) =>
+                                    handleEdit({
+                                      type: "name",
+                                      value,
+                                      index
+                                    })
+                                  }
+                                  value={it.name}
+                                />
+                                <input
+                                  onChange={({ target: { value } }) =>
+                                    handleEdit({
+                                      type: "surname",
+                                      value,
+                                      index
+                                    })
+                                  }
+                                  value={it.surname}
+                                />
+                                <input
+                                  onChange={({ target: { value } }) =>
+                                    handleEdit({
+                                      type: "email",
+                                      value,
+                                      index
+                                    })
+                                  }
+                                  value={it.email}
+                                />
+                                <input
+                                  onChange={({ target: { value } }) =>
+                                    handleEdit({
+                                      type: "phone",
+                                      value,
+                                      index
+                                    })
+                                  }
+                                  value={it.phone}
+                                /> */}
+                              </div>
+                            }
+                            actions={[
+                              <Button key="b">close</Button>,
+                              <Button key="a" onClick={() => editAble(index)}>
+                                Done
+                              </Button>
+                            ]}
+                          />
+                        </td>
+                        <td>
+                          <Button onClick={() => handleUserDelete(it)}>
+                            delete
+                          </Button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  );
+                })}
+            </table>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Profile;
