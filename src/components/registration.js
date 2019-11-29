@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Form, Popup, Input, Button } from "semantic-ui-react";
-
+import axios from "axios";
 const Registration = () => {
+  const [file, setFile] = useState("");
+  const [filename, setFilename] = useState("choose image");
+  const [uploadedFile, setUploadedFile] = useState({});
+  const [message, setMessage] = useState("");
+  const [uploadPercentage, setUploadPercentage] = useState(0);
   const initialstate = {
     user: {
       name: "",
@@ -9,25 +14,72 @@ const Registration = () => {
       email: "",
       password: "",
       phone: "",
-      text: null
+      text: null,
+      file: ""
     },
     success: null,
     error: null
   };
-
   const [state, setState] = useState(initialstate);
+
+  console.log("FILENAME", filename);
 
   const handleChange = (type, target, value) => {
     setState(prevsState => ({
       ...prevsState,
       [type]: { ...prevsState[type], [target]: value }
     }));
+    // setFile(target.files[0]);
+    // setFilename(target.files[0].name);
   };
+  const handleImageChange = e => {
+    setFile(e.target.files[0]);
+    setFilename(e.target.files[0].name);
+  };
+  const onSubmit = async () => {
+    // e.preventDefault();
+    const formData = new FormData();
+    formData.append("file", file);
 
+    try {
+      const res = await axios.post("http://admin.com:4000/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        },
+        onUploadProgress: progressEvent => {
+          setUploadPercentage(
+            parseInt(
+              Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            )
+          );
+
+          // Clear percentage
+          setTimeout(() => setUploadPercentage(0), 10000);
+        }
+      });
+
+      const { fileName, filePath } = res.data;
+
+      setUploadedFile({ fileName, filePath });
+
+      // console.log(fileName, filePath);
+      // console.log("UPLOADED FILE", uploadedFile);
+      // console.log("STATE MEJI", state);
+      setMessage("File Uploaded");
+    } catch (err) {
+      if (err.response.status === 500) {
+        setMessage("There was a problem with the server");
+      } else {
+        setMessage(err.response.data.msg);
+      }
+    }
+  };
+  // console.log("DRSIC FILENAME", setFilename);
   const addUser = () => {
+    console.log(state);
     const { user } = state;
     fetch(
-      `http://admin.com:4000/users/add?name=${user.name}&surname=${user.surname}&email=${user.email}&password=${user.password}&phone=${user.phone}&text=${user.text}`
+      `http://admin.com:4000/users/add?name=${user.name}&surname=${user.surname}&email=${user.email}&password=${user.password}&phone=${user.phone}&text=${user.text}&img=${user.file}`
     )
       // .then(response=>response.json())
       .then(data => {
@@ -42,7 +94,8 @@ const Registration = () => {
         email: "",
         password: "",
         phone: "",
-        text: ""
+        text: "",
+        filename: ""
       }
     }));
   };
@@ -129,6 +182,18 @@ const Registration = () => {
               onChange={e => handleChange("user", "phone", e.target.value)}
               value={state.user.phone}
             />
+            <Form.Field
+              id="form-input-control-last-name"
+              control={Input}
+              // label="Հեոախոս"
+              // placeholder="+374XXXXXX"
+              type="file"
+              onChange={e => {
+                handleChange("user", "file", e.target.files[0].name);
+                handleImageChange(e);
+              }}
+              // value={state.user.img}
+            />
           </Form.Group>
           <Form.Group widths="equal" className="col-sm-5">
             <Popup
@@ -145,23 +210,42 @@ const Registration = () => {
               on="click"
               hideOnScroll
             />
-            {/* <p></p>
-        <input type="" /> */}
             <Form.Field className="d-flex justify-content-center">
               <Button
                 className="w-100"
                 color="primary"
-                // control={Button}
-                // // placeholder="Ծանոթացել եմ պայմաններին"
-                // options=""
-                // type="button"
-                onClick={addUser}
+                onClick={() => {
+                  onSubmit();
+                  addUser();
+                }}
               >
                 Գրանցվել
               </Button>
             </Form.Field>
           </Form.Group>
         </Form>
+        {/* <Form onSubmit={onSubmit}> */}
+
+        {/* <input
+            type="submit"
+            value="Upload"
+            className="btn btn-primary btn-block mt-4"
+          /> */}
+        <h3 className="text-center">{uploadedFile.fileName}</h3>
+        <img style={{ width: "100%" }} src={uploadedFile.filePath} alt="" />
+        {/* </Form> */}
+        {uploadedFile ? (
+          <div className="row mt-5">
+            <div className="col-md-6 m-auto">
+              <h3 className="text-center">{uploadedFile.fileName}</h3>
+              <img
+                style={{ width: "100%" }}
+                src={uploadedFile.filePath}
+                alt=""
+              />
+            </div>
+          </div>
+        ) : null}
       </Container>
     </div>
   );

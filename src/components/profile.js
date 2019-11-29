@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Dimmer, Loader, Button, Modal, Form, Input } from "semantic-ui-react";
 // import { Container, Form, Popup, Input, Button } from "semantic-ui-react";
+import { Redirect } from "react-router-dom";
 
 const Profile = () => {
   const initialstate = {
@@ -11,7 +12,8 @@ const Profile = () => {
       email: "",
       phone: "",
       isAdmin: "",
-      text: ""
+      text: "",
+      file: ""
     },
     success: false,
     error: ""
@@ -20,10 +22,9 @@ const Profile = () => {
   useEffect(() => {
     getUserData();
   }, []);
-
   const getUserData = async () => {
     try {
-      const res = await fetch("http://admin.com:4000/profile", {
+      const res = await fetch("http://admin.com:4000/profile/admin", {
         credentials: "include"
       });
       const response = await res.json();
@@ -62,7 +63,8 @@ const Profile = () => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json"
-      }
+      },
+      credentials: "include"
     })
       .then(res => res.json())
       .then(data => {
@@ -106,10 +108,11 @@ const Profile = () => {
         Accept: "application/json",
         "Content-Type": "application/json"
       },
+      credentials: "include",
       body: JSON.stringify({ name, surname, email, phone, text })
     });
   };
-  // console.log(index);
+  console.log(state);
   // fetch(`http://admin.com:4000/delete/${index.id}`)
   //   .then(response => response.json())
   //   .then(response => this.setState({ users: response.data }))
@@ -130,33 +133,50 @@ const Profile = () => {
       ) : (
         <div>
           <div>
-            {state.user.isAdmin ? (
-              <p className="position_adm">
-                <span className="adm">Hello Admin </span> {state.user.name}
-              </p>
+            {state.user.groupId === 2 ? (
+              <div>
+                <p className="position_adm">
+                  <span className="adm">Hello Admin</span>
+                  {state.user.name}
+                </p>
+                <div>{state.user.surname}</div>
+                <div>{state.user.phone}</div>
+                <div>{state.user.email}</div>
+              </div>
             ) : (
-              <p className="position_adm">
-                <span className="adm">Hello user </span> {state.user.name}
-              </p>
+              <div>
+                <p className="position_adm">
+                  <span className="adm">Hello user </span> {state.user.name}
+                </p>
+                <div>
+                  <span className="us_info">user surname</span>{" "}
+                  {state.user.surname}
+                </div>
+                <div>
+                  <span className="us_info">user phone</span> {state.user.phone}
+                </div>
+                <div>
+                  <span className="us_info">user email</span> {state.user.email}
+                </div>
+              </div>
             )}
           </div>
           <div>
-            <span className="us_info">user surname</span> {state.user.surname}
+            <img
+              src={require(`../../public/upload/${state.user.img}`)}
+              width="100"
+              height="100"
+            />
           </div>
-          <div>
-            <span className="us_info">user phone</span> {state.user.phone}
-          </div>
-          <div>
-            <span className="us_info">user email</span> {state.user.email}
-          </div>
-          {state.user.text && !state.user.isAdmin && (
+
+          {state.user.text && state.user.groupId === 1 && (
             <div className="btn_auth">
               <span className="adm">Admin send message </span>
               <p>{state.user.text}</p>
             </div>
           )}
-          {state.user.isAdmin && (
-            <table>
+          {state.user.groupId === 2 && (
+            <table className="table_secction">
               <thead className="first_compon">
                 <tr>
                   <th>Name</th>
@@ -172,11 +192,11 @@ const Profile = () => {
                 state.users.map((it, index) => {
                   return (
                     <tbody key={it.id}>
-                      <tr>
+                      <tr className="tr_section">
                         <td>{it.name}</td>
                         <td>{it.surname}</td>
                         <td>{it.email}</td>
-                        <td>{it.password}</td>
+                        <td title={it.password}>/HASH/</td>
                         <td>{it.phone}</td>
                         <td>
                           <Modal
@@ -288,46 +308,6 @@ const Profile = () => {
                                     />
                                   </Form.Group>
                                 </Form>
-                                {/* <input
-                                  onChange={({ target: { value } }) =>
-                                    handleEdit({
-                                      type: "name",
-                                      value,
-                                      index
-                                    })
-                                  }
-                                  value={it.name}
-                                />
-                                <input
-                                  onChange={({ target: { value } }) =>
-                                    handleEdit({
-                                      type: "surname",
-                                      value,
-                                      index
-                                    })
-                                  }
-                                  value={it.surname}
-                                />
-                                <input
-                                  onChange={({ target: { value } }) =>
-                                    handleEdit({
-                                      type: "email",
-                                      value,
-                                      index
-                                    })
-                                  }
-                                  value={it.email}
-                                />
-                                <input
-                                  onChange={({ target: { value } }) =>
-                                    handleEdit({
-                                      type: "phone",
-                                      value,
-                                      index
-                                    })
-                                  }
-                                  value={it.phone}
-                                /> */}
                               </div>
                             }
                             actions={[

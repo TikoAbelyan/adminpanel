@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: aliceblue !important;
 }
 
 code {
@@ -46,7 +47,7 @@ table tr {
   margin: 1rem 30% !important;
 }
 .ui.dimmer {
-  background-color: rgba(0, 0, 0, 0.1) !important;
+  /* background-color: rgba(0, 0, 0, 0.1) !important; */
 }
 .fl_container {
   padding: 40px 0;
@@ -70,4 +71,16 @@ table tr {
 .us_info {
   font-style: italic;
   font-weight: bold;
+}
+.table_secction {
+  display: grid;
+  justify-content: center;
+  grid-auto-rows: 50px;
+}
+.tr_section:hover {
+  background: #c1c1c1;
+  cursor: pointer;
+}
+.menu_item {
+  background: lightblue !important;
 }

@@ -10,6 +10,7 @@ import Login from "./components/login";
 import Home from "./components/home";
 import Profile from "./components/profile";
 import Registration from "./components/registration";
+import UserComponent from "./components/user";
 
 const App = () => {
   const initialState = {
@@ -61,9 +62,7 @@ const App = () => {
         })
       });
       const data = await res.json();
-      console.log("data", data);
       if (data && data.success) {
-        // localStorage.getItem("bzez");
         setState(prevsState => ({
           ...prevsState,
           success: true,
@@ -109,6 +108,7 @@ const App = () => {
           />
 
           <Route path="/profile" component={Profile} />
+          <Route path="/user" component={UserComponent} />
 
           <Route path="/registration" component={Registration} />
         </Switch>
