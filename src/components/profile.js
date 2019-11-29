@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Dimmer, Loader, Button, Modal, Form, Input } from "semantic-ui-react";
 // import { Container, Form, Popup, Input, Button } from "semantic-ui-react";
-import { Redirect } from "react-router-dom";
 
 const Profile = () => {
   const initialstate = {
@@ -168,7 +167,6 @@ const Profile = () => {
               height="100"
             />
           </div>
-
           {state.user.text && state.user.groupId === 1 && (
             <div className="btn_auth">
               <span className="adm">Admin send message </span>
