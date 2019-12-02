@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Dimmer, Loader, Button, Modal, Form, Input } from "semantic-ui-react";
+import {
+  Dimmer,
+  Loader,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Rating,
+  Icon
+} from "semantic-ui-react";
+
 // import { Container, Form, Popup, Input, Button } from "semantic-ui-react";
 
 const Profile = () => {
@@ -131,16 +141,26 @@ const Profile = () => {
         </Dimmer>
       ) : (
         <div>
-          <div>
+          <div className="allinfo">
             {state.user.groupId === 2 ? (
               <div>
                 <p className="position_adm">
                   <span className="adm">Hello Admin</span>
                   {state.user.name}
                 </p>
-                <div>{state.user.surname}</div>
-                <div>{state.user.phone}</div>
-                <div>{state.user.email}</div>
+                <div className="d-flex pl-2 pt-1">
+                  <Icon name="user" size="large" />
+                  {state.user.surname}
+                </div>
+
+                <div className="d-flex pl-2 pt-1">
+                  <Icon name="phone" size="large" />
+                  {state.user.phone}
+                </div>
+                <div className="d-flex pl-2 pt-1">
+                  <Icon name="mail" size="large" />
+                  {state.user.email}
+                </div>
               </div>
             ) : (
               <div>
@@ -159,14 +179,23 @@ const Profile = () => {
                 </div>
               </div>
             )}
+            <div>
+              <img
+                src={require(`../../public/upload/${state.user.img}`)}
+                width="100"
+                height="100"
+              />
+            </div>
+            <div>
+              <Rating
+                icon="star"
+                maxRating={5}
+                clearable={false}
+                defaultRating={null}
+              />
+            </div>
           </div>
-          <div>
-            <img
-              src={require(`../../public/upload/${state.user.img}`)}
-              width="100"
-              height="100"
-            />
-          </div>
+
           {state.user.text && state.user.groupId === 1 && (
             <div className="btn_auth">
               <span className="adm">Admin send message </span>
@@ -306,6 +335,14 @@ const Profile = () => {
                                     />
                                   </Form.Group>
                                 </Form>
+                                <div className="d-flex justify-content-center">
+                                  <Rating
+                                    icon="star"
+                                    maxRating={5}
+                                    clearable
+                                    defaultRating={1}
+                                  />
+                                </div>
                               </div>
                             }
                             actions={[
