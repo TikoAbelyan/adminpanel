@@ -15,7 +15,8 @@ const Registration = () => {
       password: "",
       phone: "",
       text: null,
-      file: ""
+      file: "",
+      rayting: 0
     },
     success: null,
     error: null
@@ -79,7 +80,7 @@ const Registration = () => {
     console.log(state);
     const { user } = state;
     fetch(
-      `http://admin.com:4000/users/add?name=${user.name}&surname=${user.surname}&email=${user.email}&password=${user.password}&phone=${user.phone}&text=${user.text}&img=${user.file}`
+      `http://admin.com:4000/users/add?name=${user.name}&surname=${user.surname}&email=${user.email}&password=${user.password}&phone=${user.phone}&text=${user.text}&img=${user.file}&rayting=${user.rayting}`
     )
       // .then(response=>response.json())
       .then(data => {
@@ -95,7 +96,8 @@ const Registration = () => {
         password: "",
         phone: "",
         text: "",
-        filename: ""
+        filename: "",
+        rayting: ""
       }
     }));
   };

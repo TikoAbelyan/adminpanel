@@ -85,12 +85,16 @@ table tr {
   background: lightblue !important;
 }
 .allinfo {
-  width: 250px;
-  margin: 0 auto;
   display: grid;
   justify-content: center;
   border: 1px solid;
+  grid-auto-rows: 120px;
   background: beige;
   box-shadow: 0px 0px 20px #c1c1c1;
   text-align: center;
+  width: 100%;
+}
+.profile_check {
+  display: grid;
+  grid-template-columns: 30% 1fr;
 }

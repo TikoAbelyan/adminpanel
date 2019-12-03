@@ -9,7 +9,8 @@ import {
   Rating,
   Icon
 } from "semantic-ui-react";
-
+import Rater from "react-rater";
+import "react-rater/lib/react-rater.css";
 // import { Container, Form, Popup, Input, Button } from "semantic-ui-react";
 
 const Profile = () => {
@@ -22,7 +23,8 @@ const Profile = () => {
       phone: "",
       isAdmin: "",
       text: "",
-      file: ""
+      file: "",
+      rayting: 0
     },
     success: false,
     error: ""
@@ -121,7 +123,7 @@ const Profile = () => {
       body: JSON.stringify({ name, surname, email, phone, text })
     });
   };
-  console.log(state);
+
   // fetch(`http://admin.com:4000/delete/${index.id}`)
   //   .then(response => response.json())
   //   .then(response => this.setState({ users: response.data }))
@@ -140,7 +142,7 @@ const Profile = () => {
           <Loader size="mini">Loading</Loader>
         </Dimmer>
       ) : (
-        <div>
+        <div className="profile_check">
           <div className="allinfo">
             {state.user.groupId === 2 ? (
               <div>
@@ -148,16 +150,16 @@ const Profile = () => {
                   <span className="adm">Hello Admin</span>
                   {state.user.name}
                 </p>
-                <div className="d-flex pl-2 pt-1">
+                <div className="d-flex pb-2">
                   <Icon name="user" size="large" />
                   {state.user.surname}
                 </div>
 
-                <div className="d-flex pl-2 pt-1">
+                <div className="d-flex pb-2">
                   <Icon name="phone" size="large" />
                   {state.user.phone}
                 </div>
-                <div className="d-flex pl-2 pt-1">
+                <div className="d-flex pb-2">
                   <Icon name="mail" size="large" />
                   {state.user.email}
                 </div>
@@ -187,12 +189,14 @@ const Profile = () => {
               />
             </div>
             <div>
-              <Rating
-                icon="star"
-                maxRating={5}
-                clearable={false}
-                defaultRating={null}
+              <Rater
+                total={5}
+                rating={state.user.rayting}
+                // onRate={({ rating }) => console.log({ rating })}
               />
+              <h3 style={{ textAlign: "center", color: "red" }}>
+                {state.user.rayting}
+              </h3>
             </div>
           </div>
 
@@ -228,7 +232,11 @@ const Profile = () => {
                         <td>
                           <Modal
                             trigger={
-                              <Button onClick={() => handleUpdateUser(it)}>
+                              <Button
+                                color="green"
+                                onClick={() => handleUpdateUser(it)}
+                              >
+                                <Icon name="edit" size="large" />
                                 edit
                               </Button>
                             }
@@ -354,7 +362,11 @@ const Profile = () => {
                           />
                         </td>
                         <td>
-                          <Button onClick={() => handleUserDelete(it)}>
+                          <Button
+                            color="red"
+                            onClick={() => handleUserDelete(it)}
+                          >
+                            <Icon name="remove" size="large" />
                             delete
                           </Button>
                         </td>
