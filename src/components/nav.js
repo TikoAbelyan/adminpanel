@@ -8,13 +8,14 @@ const Nav = ({ state, handleLogout }) => {
   return (
     <nav>
       {/* {console.log("navbar storage", localStorage)} */}
-      {localStorage.propagation && console.log("navbar storage", localStorage)}
+      {/* {localStorage.propagation && console.log("navbar storage", localStorage)} */}
+      {console.log(document.cookie)}
       <h3>logo</h3>
       <ul className="unordList">
         <Link to="/">
           <li>Home</li>
         </Link>
-        {!state.logedIn && !state.success ? (
+        {!state.logedIn && !state.success && !document.cookie ? (
           <Fragment>
             <Menu size="mini" className="menu_item">
               <Link to="/login">

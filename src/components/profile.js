@@ -147,7 +147,7 @@ const Profile = () => {
             {state.user.groupId === 2 ? (
               <div>
                 <p className="position_adm">
-                  <span className="adm">Hello Admin</span>
+                  <span className="adm">Hello Admin </span>
                   {state.user.name}
                 </p>
                 <div className="d-flex pb-2">
@@ -344,11 +344,9 @@ const Profile = () => {
                                   </Form.Group>
                                 </Form>
                                 <div className="d-flex justify-content-center">
-                                  <Rating
-                                    icon="star"
-                                    maxRating={5}
-                                    clearable
-                                    defaultRating={1}
+                                  <Rater
+                                    total={5}
+                                    rating={state.user.rayting}
                                   />
                                 </div>
                               </div>

@@ -12,6 +12,8 @@ import Profile from "./components/profile";
 import Registration from "./components/registration";
 import UserComponent from "./components/user";
 
+// import { remove } from "jest-util/build/preRunMessage";
+
 const App = () => {
   const initialState = {
     login: {
@@ -27,13 +29,18 @@ const App = () => {
   localStorage.setItem("propagation", state.success);
   // localStorage.getItem(state.logedIn);
   const handleLogout = () => {
-    // localStorage.removeItem("propagation");
-    // localStorage.clear();
+    document.cookie.split(";").forEach(function(c) {
+      document.cookie = c
+        .replace(/^ +/, "")
+        .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
     setState(prevsState => ({
       ...prevsState,
       success: null,
       logedIn: false
     }));
+    delete document.ses;
+    console.log("LOGOUT", document.cookie);
   };
   // console.log("cookie", document.cookie);
   const handleChange = (type, target, value) => {
@@ -106,11 +113,13 @@ const App = () => {
               />
             )}
           />
-
-          <Route path="/profile" component={Profile} />
-          <Route path="/user" component={UserComponent} />
-
           <Route path="/registration" component={Registration} />
+          {document.cookie ? (
+            <Route path="/profile" component={Profile} />
+          ) : (
+            <Redirect to="/" />
+          )}
+          <Route path="/user" component={UserComponent} />
         </Switch>
       </div>
     </Router>
